@@ -1,4 +1,4 @@
-package com.example.fakerdataclass
+package com.mtzdev.fakerdataclass
 
 import org.junit.Test
 

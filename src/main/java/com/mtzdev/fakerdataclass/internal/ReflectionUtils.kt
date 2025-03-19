@@ -1,9 +1,9 @@
-package com.example.fakerdataclass.internal
+package com.mtzdev.fakerdataclass.internal
 
-import com.example.fakerdataclass.generators.CollectionGenerators
-import com.example.fakerdataclass.generators.DateTimeGenerators
-import com.example.fakerdataclass.generators.PrimitiveGenerators
-import com.example.fakerdataclass.generators.StringGenerators
+import com.mtzdev.fakerdataclass.generators.CollectionGenerators
+import com.mtzdev.fakerdataclass.generators.DateTimeGenerators
+import com.mtzdev.fakerdataclass.generators.PrimitiveGenerators
+import com.mtzdev.fakerdataclass.generators.StringGenerators
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Date
@@ -21,30 +21,24 @@ import kotlin.reflect.full.primaryConstructor
  */
 @Suppress("UNCHECKED_CAST")
 internal fun <T : Any> generateFakeData(clazz: KClass<T>, customValues: Map<String, Any?> = emptyMap()): T {
-    // Verificar si es una data class
     if (!clazz.isData) {
         throw IllegalArgumentException("La clase ${clazz.simpleName} no es una data class")
     }
 
-    // Obtener el constructor primario
     val constructor = clazz.primaryConstructor
         ?: throw IllegalArgumentException("La data class ${clazz.simpleName} no tiene un constructor primario")
 
-    // Generar valores para cada parámetro del constructor
     val parameters = constructor.parameters
     val arguments = parameters.associateWith { parameter ->
         val paramName = parameter.name ?: return@associateWith null
 
-        // Verificar si hay un valor personalizado para este parámetro
         if (customValues.containsKey(paramName)) {
             return@associateWith customValues[paramName]
         }
 
-        // Generar un valor aleatorio basado en el tipo
         generateValueForType(parameter.type, paramName)
     }
 
-    // Crear la instancia usando los argumentos generados
     return constructor.callBy(arguments)
 }
 
@@ -58,7 +52,6 @@ internal fun <T : Any> generateFakeData(clazz: KClass<T>, customValues: Map<Stri
 internal fun generateValueForType(type: KType, fieldName: String? = null): Any? {
     val classifier = type.classifier as? KClass<*> ?: return null
 
-    // Manejar nulabilidad
     if (type.isMarkedNullable && Random.nextInt(10) < 2) {
         return null
     }

@@ -1,4 +1,4 @@
-package com.example.fakerdataclass.internal
+package com.mtzdev.fakerdataclass.internal
 
 import kotlin.reflect.KClass
 
