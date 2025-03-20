@@ -1,4 +1,4 @@
-package com.example.fakerdataclass.generators
+package com.mtzdev.fakerdataclass.generators
 
 import kotlin.random.Random
 import kotlin.reflect.KType

@@ -1,6 +1,6 @@
-package com.example.fakerdataclass.core
+package com.mtzdev.fakerdataclass.core
 
-import com.example.fakerdataclass.internal.FakeDataFactory
+import com.mtzdev.fakerdataclass.internal.FakeDataFactory
 
 /**
  * Builder para construir objetos falsos de manera declarativa usando DSL.

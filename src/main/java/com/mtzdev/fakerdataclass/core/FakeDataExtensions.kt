@@ -1,4 +1,4 @@
-package com.example.fakerdataclass.core
+package com.mtzdev.fakerdataclass.core
 
 /**
  * Genera una lista de instancias falsas de una data class.
