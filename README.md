@@ -1,7 +1,7 @@
 # FakerDataClass
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg)](https://android-arsenal.com/api?level=21)
+[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg)](https://android-arsenal.com/api?level=26)
 
 Una biblioteca ligera para Kotlin/Android que genera automáticamente instancias de data classes con datos aleatorios para simplificar tus tests unitarios.
 
@@ -174,6 +174,46 @@ fun `test entity to domain model conversion`() {
 }
 ```
 
+### Tests de tipos especiales 
+Para tipos especiales como Drawable, @DrawableRes, @StringRes 
+es necesario agregar la anotación @Config al test, de lo contrario lanzará un error.
+
+```kotlin
+// example data class
+data class SpecialTypeDTO(
+    @DrawableRes
+    val userImage: Int,
+    val userName: Color,
+    val userPoster:Drawable,
+    @StringRes
+    val userNameRes: Int
+)
+
+@Config(sdk = [26])
+@RunWith(RobolectricTestRunner::class)
+class SomeTest {
+    @Test
+    fun `GIVEN SpecialTypeDTO WHEN fakeData THEN return random data`() {
+        val fakeDto = fakeData<SpecialTypeDTO>()
+
+        assertNotNull(fakeDto)
+    }
+
+    @Test
+    fun `GIVEN SpecialTypeDTO WHEN resource is real THEN should be set in component view`() {
+        val fakeDto = fakeData<SpecialTypeDTO>(){
+            property(SpecialTypeDTO::userNameRes).returns(R.string.faker_data_class_name)
+        }
+        val textView = TextView(context)
+        textView.setText(fakeDto.userNameRes)
+        assertNotNull(textView.text)
+    }
+}
+
+// example with real resources
+
+
+```
 ### Tests de Repositories
 
 
