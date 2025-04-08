@@ -1,14 +1,37 @@
 package com.mtzdev.fakerdataclass
 
+import android.app.Activity
+import android.content.Context
+import android.widget.ImageView
+import android.widget.TextView
 import com.mtzdev.fakerdataclass.core.fakeData
 import com.mtzdev.fakerdataclass.dataclass.CompleteTestDto
 import com.mtzdev.fakerdataclass.dataclass.SimpleTestDTO
+import com.mtzdev.fakerdataclass.dataclass.SpecialTypeDTO
 import com.mtzdev.fakerdataclass.dataclass.UserTestDTO
 import com.mtzdev.fakerdataclass.dataclass.UserType
 import junit.framework.TestCase.assertNotNull
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@Config(
+    sdk = [26],
+    manifest = Config.NONE,
+    packageName = "com.mtzdev.fakerdataclass"
+)
+@RunWith(RobolectricTestRunner::class)
 class FakerDataTest {
+
+    private lateinit var context: Context
+
+    @Before
+    fun setUp() {
+        context = Robolectric.buildActivity(Activity::class.java).get()
+    }
 
     @Test
     fun `WHEN SimpleTestDTO THEN fakeData return random data`() {
@@ -69,6 +92,23 @@ class FakerDataTest {
         assert(fakeDto.user.email == "some@mail.com")
         assert(fakeDto.atributes.isNotEmpty())
         assert(fakeDto.type == UserType.ADMIN)
+        println(fakeDto)
+    }
+
+    @Test
+    fun `GIVEN SpecialTypeDTO WHEN fakeData THEN return random data`() {
+        val fakeDto = fakeData<SpecialTypeDTO>(){
+            property(SpecialTypeDTO::userNameRes).returns(R.string.faker_data_class_name)
+        }
+        val imageView = ImageView(context)
+        val textView = TextView(context)
+
+        imageView.setImageDrawable(fakeDto.userPoster)
+        textView.setText(fakeDto.userNameRes)
+
+        assertNotNull(fakeDto)
+        assert(imageView.drawable == fakeDto.userPoster)
+        assertNotNull(textView.text)
         println(fakeDto)
     }
 }

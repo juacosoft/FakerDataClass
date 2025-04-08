@@ -1,8 +1,18 @@
 package com.mtzdev.fakerdataclass.internal
 
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Bundle
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.mtzdev.fakerdataclass.generators.CollectionGenerators
 import com.mtzdev.fakerdataclass.generators.DateTimeGenerators
 import com.mtzdev.fakerdataclass.generators.PrimitiveGenerators
+import com.mtzdev.fakerdataclass.generators.ResourceGenerator
 import com.mtzdev.fakerdataclass.generators.StringGenerators
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,8 +45,8 @@ internal fun <T : Any> generateFakeData(clazz: KClass<T>, customValues: Map<Stri
         if (customValues.containsKey(paramName)) {
             return@associateWith customValues[paramName]
         }
-
-        generateValueForType(parameter.type, paramName)
+        val annotations = parameter.annotations
+        generateValueForType(parameter.type, paramName, annotations)
     }
 
     return constructor.callBy(arguments)
@@ -49,14 +59,43 @@ internal fun <T : Any> generateFakeData(clazz: KClass<T>, customValues: Map<Stri
  * @param fieldName Nombre del campo (para contexto)
  * @return Valor generado apropiado para el tipo
  */
-internal fun generateValueForType(type: KType, fieldName: String? = null): Any? {
+internal fun generateValueForType(
+    type: KType,
+    fieldName: String? = null,
+    annotations: List<Annotation> = emptyList()
+): Any? {
+    // Check for specific annotations
+
     val classifier = type.classifier as? KClass<*> ?: return null
 
     if (type.isMarkedNullable && Random.nextInt(10) < 2) {
         return null
     }
+    val hasDrawableResAnnotation = annotations.any { it is DrawableRes }
+    val hasStringResAnnotation = annotations.any { it is StringRes }
 
     return when {
+        // special types
+        classifier == Uri::class -> {
+            Uri.parse("https://fakeurl.com")
+        }
+        classifier == Bundle::class -> {
+            Bundle().apply {
+                putString("stringkey", "some value")
+            }
+        }
+        classifier == Drawable::class ->
+            ResourceGenerator.generateResource(ResourceGenerator.ResourceType.DRAWABLE)
+
+        classifier == Color::class ->
+            ResourceGenerator.generateResource(ResourceGenerator.ResourceType.COLOR)
+
+        classifier == Int::class && hasDrawableResAnnotation ->
+            ResourceGenerator.generateResource(ResourceGenerator.ResourceType.DRAWABLE)
+
+        classifier == Int::class && hasStringResAnnotation ->
+            ResourceGenerator.generateResource(ResourceGenerator.ResourceType.STRING)
+
         // Tipos primitivos
         classifier == String::class -> StringGenerators.generateContextualString(fieldName)
         classifier == Int::class -> PrimitiveGenerators.generateInt(fieldName)
