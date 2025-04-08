@@ -1,7 +1,7 @@
 # FakerDataClass
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg)](https://android-arsenal.com/api?level=26)
+[![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg)](https://android-arsenal.com/api?level=26)
 
 Una biblioteca ligera para Kotlin/Android que genera automáticamente instancias de data classes con datos aleatorios para simplificar tus tests unitarios.
 
